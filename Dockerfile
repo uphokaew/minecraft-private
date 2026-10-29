@@ -1,6 +1,6 @@
 FROM ubuntu:24.04
 
-# ติดตั้งแพ็กเกจที่จำเป็นสำหรับแตกไฟล์และรันเซิร์ฟเวอร์
+# ติดตั้งแพ็กเกจที่จำเป็น
 RUN apt-get update && apt-get install -y \
     curl \
     xz-utils \
@@ -15,17 +15,15 @@ RUN curl -L -o bedrock-server.tar.xz https://github.com/uphokaew/minecraft-priva
     && tar -xf bedrock-server.tar.xz \
     && rm bedrock-server.tar.xz
 
-# ดาวน์โหลด playit CLI แบบตรงๆ (เวอร์ชันล่าสุดสำหรับ Linux AMD64)
+# ดาวน์โหลด playit CLI (ลิงก์ตรงเวอร์ชัน Linux x86_64 ที่ถูกต้อง)
 RUN curl -L -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/download/v0.15.2/playit-0.15.2_x86_64 \
     && chmod +x /usr/local/bin/playit
 
-# อนุญาตสิทธิ์การรันไฟล์เซิร์ฟเวอร์ Minecraft
-RUN chmod +x bedrock_server
+# ค้นหาและให้สิทธิ์รันไฟล์ bedrock_server ทั้งหมดในโฟลเดอร์
+RUN find . -name "bedrock_server" -exec chmod +x {} \;
 
-# กำหนดตัวแปรสภาพแวดล้อม
 ENV LD_LIBRARY_PATH=.
 
-# คัดลอกและตั้งค่าสิทธิ์ให้ entrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
