@@ -1,8 +1,15 @@
 #!/bin/bash
 
-# เริ่มต้นรัน playit ใน Background เพื่อสร้าง UDP Tunnel
-# หมายเหตุ: ครั้งแรกที่รัน ดู Link ใน Log ของ Render เพื่อไปกด Claim บนเว็บไซต์ playit.gg
+# รัน playit ใน Background สำหรับทำ UDP Tunnel
 playit &
 
-# รันตัว Minecraft Bedrock Dedicated Server
-./bedrock_server
+# ค้นหาตำแหน่งไฟล์ bedrock_server และรันขึ้นมา
+SERVER_BIN=$(find . -name "bedrock_server" -print -quit)
+
+if [ -z "$SERVER_BIN" ]; then
+    echo "Error: Could not find bedrock_server binary!"
+    exit 1
+fi
+
+echo "Starting Minecraft Bedrock Server..."
+exec $SERVER_BIN
