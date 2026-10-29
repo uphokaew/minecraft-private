@@ -1,12 +1,11 @@
 FROM ubuntu:24.04
 
-# ติดตั้งแพ็กเกจที่จำเป็นสำหรับแตกไฟล์ .tar.xz และรัน BDS
+# ติดตั้งแพ็กเกจที่จำเป็นสำหรับแตกไฟล์และรันเซิร์ฟเวอร์
 RUN apt-get update && apt-get install -y \
     curl \
     xz-utils \
     libcurl4 \
     ca-certificates \
-    gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /bedrock
@@ -16,17 +15,17 @@ RUN curl -L -o bedrock-server.tar.xz https://github.com/uphokaew/minecraft-priva
     && tar -xf bedrock-server.tar.xz \
     && rm bedrock-server.tar.xz
 
-# ติดตั้ง playit.gg CLI สำหรับทำ UDP Tunnel (เพื่อให้เพื่อนเข้าพอร์ต UDP 19132 ผ่าน Render ได้)
-RUN curl -SsL https://playit-cloud.github.io/LD-PPA/add-repo.sh | bash \
-    && apt-get update && apt-get install -y playit
+# ดาวน์โหลด playit CLI แบบตรงๆ (เวอร์ชันล่าสุดสำหรับ Linux AMD64)
+RUN curl -L -o /usr/local/bin/playit https://github.com/playit-cloud/playit-agent/releases/download/v0.15.2/playit-0.15.2_x86_64 \
+    && chmod +x /usr/local/bin/playit
 
-# อนุญาตสิทธิ์การรันไฟล์เซิร์ฟเวอร์
+# อนุญาตสิทธิ์การรันไฟล์เซิร์ฟเวอร์ Minecraft
 RUN chmod +x bedrock_server
 
-# กำหนดตัวแปรสภาพแวดล้อมให้หาไลบรารีเจอ
+# กำหนดตัวแปรสภาพแวดล้อม
 ENV LD_LIBRARY_PATH=.
 
-# สคริปต์เปิดใช้งาน
+# คัดลอกและตั้งค่าสิทธิ์ให้ entrypoint.sh
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
